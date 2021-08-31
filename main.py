@@ -8,11 +8,11 @@ from urllib.parse import urljoin
 
 
 def send_telegram_message(telegram_bot, telegram_chat_id, work_title,
-                          lesson_url, success_message_flag):
+                          lesson_url, message_is_negative):
     neg_message = "К сожалению, в работе нашлись ошибки."
     pos_message = \
         "Преподавателю всё понравилось, можно приступать к следующему уроку!"
-    success_fail_message = pos_message if success_message_flag else neg_message
+    success_fail_message = pos_message if message_is_negative else neg_message
     telegram_message = f"""У вас проверили работу "{work_title}".\n
         {success_fail_message}\n\n{lesson_url}"""
     telegram_bot.send_message(text=telegram_message, chat_id=telegram_chat_id)
@@ -22,7 +22,7 @@ def homeworks_status_poll(telegram_bot, telegram_chat_id, headers,
                           timestamp=None):
     api_url = "https://dvmn.org/api/long_polling/"
     try:
-        params = {"timestamp": timestamp} if timestamp else {}
+        params = {"timestamp": timestamp} if timestamp else None
         response = requests.get(api_url, headers=headers, params=params)
         response.raise_for_status()
         response_content = response.json()
@@ -32,11 +32,9 @@ def homeworks_status_poll(telegram_bot, telegram_chat_id, headers,
             lesson_url = \
                 urljoin("https://dvmn.org",
                         response_content['new_attempts'][0]['lesson_url'])
-            success_message_flag = \
-                False if response_content['new_attempts'][0]['is_negative'] \
-                else True
+            message_is_negative = response_content['new_attempts'][0]['is_negative']
             send_telegram_message(telegram_bot, telegram_chat_id, work_title,
-                                  lesson_url, success_message_flag)
+                                  lesson_url, message_is_negative)
         else:
             timestamp = response_content['timestamp_to_request']
 

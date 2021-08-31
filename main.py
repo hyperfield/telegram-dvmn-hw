@@ -18,7 +18,7 @@ def send_telegram_message(telegram_bot, telegram_chat_id, work_title,
     telegram_bot.send_message(text=telegram_message, chat_id=telegram_chat_id)
 
 
-def homeworks_status_poll(telegram_bot, telegram_chat_id, headers,
+def get_homeworks_status(telegram_bot, telegram_chat_id, headers,
                           timestamp=None):
     api_url = "https://dvmn.org/api/long_polling/"
     try:
@@ -57,8 +57,8 @@ def main():
 
     timestamp = None
     while True:
-        timestamp = homeworks_status_poll(telegram_bot, telegram_chat_id,
-                                          headers, timestamp)
+        timestamp = get_homeworks_status(telegram_bot, telegram_chat_id,
+                                         headers, timestamp)
 
 
 if __name__ == '__main__':

@@ -41,7 +41,6 @@ def get_homeworks_status_updates(telegram_bot, telegram_chat_id, headers,
 
         return timestamp
     except requests.exceptions.ReadTimeout:
-        print("Read timed out")
         return None
     except ConnectionError:
         print("No internet connection")

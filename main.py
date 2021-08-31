@@ -30,10 +30,11 @@ def get_homeworks_status_updates(telegram_bot, telegram_chat_id, headers,
         response_content = response.json()
         if response_content["status"] == "found":
             timestamp = response_content['last_attempt_timestamp']
-            work_title = response_content['new_attempts'][0]['lesson_title']
+            last_attempt = response_content['new_attempts'][0]
+            work_title = last_attempt['lesson_title']
+            relative_lesson_url = last_attempt['lesson_url']
             lesson_url = \
-                urljoin("https://dvmn.org",
-                        response_content['new_attempts'][0]['lesson_url'])
+                urljoin("https://dvmn.org", relative_lesson_url)
             message_is_negative = \
                 response_content['new_attempts'][0]['is_negative']
             send_telegram_message(telegram_bot, telegram_chat_id, work_title,

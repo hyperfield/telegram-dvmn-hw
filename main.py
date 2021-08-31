@@ -18,8 +18,8 @@ def send_telegram_message(telegram_bot, telegram_chat_id, work_title,
     telegram_bot.send_message(text=telegram_message, chat_id=telegram_chat_id)
 
 
-def get_homeworks_status(telegram_bot, telegram_chat_id, headers,
-                          timestamp=None):
+def get_homeworks_status_updates(telegram_bot, telegram_chat_id, headers,
+                                 timestamp=None):
     api_url = "https://dvmn.org/api/long_polling/"
     try:
         params = {"timestamp": timestamp} if timestamp else None
@@ -32,7 +32,8 @@ def get_homeworks_status(telegram_bot, telegram_chat_id, headers,
             lesson_url = \
                 urljoin("https://dvmn.org",
                         response_content['new_attempts'][0]['lesson_url'])
-            message_is_negative = response_content['new_attempts'][0]['is_negative']
+            message_is_negative = \
+                response_content['new_attempts'][0]['is_negative']
             send_telegram_message(telegram_bot, telegram_chat_id, work_title,
                                   lesson_url, message_is_negative)
         else:
@@ -57,8 +58,9 @@ def main():
 
     timestamp = None
     while True:
-        timestamp = get_homeworks_status(telegram_bot, telegram_chat_id,
-                                         headers, timestamp)
+        timestamp = get_homeworks_status_updates(telegram_bot,
+                                                 telegram_chat_id,
+                                                 headers, timestamp)
 
 
 if __name__ == '__main__':

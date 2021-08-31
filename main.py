@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 from os import getenv
 import requests
 import telegram
+import time
 from urllib.parse import urljoin
 
 
@@ -19,12 +20,13 @@ def send_telegram_message(telegram_bot, telegram_chat_id, work_title,
 
 
 def get_homeworks_status_updates(telegram_bot, telegram_chat_id, headers,
-                                 timestamp=None):
+                                 no_connection_count, timestamp=None):
     api_url = "https://dvmn.org/api/long_polling/"
     try:
         params = {"timestamp": timestamp} if timestamp else None
         response = requests.get(api_url, headers=headers, params=params)
         response.raise_for_status()
+        no_connection_count = 0
         response_content = response.json()
         if response_content["status"] == "found":
             timestamp = response_content['last_attempt_timestamp']
@@ -43,7 +45,12 @@ def get_homeworks_status_updates(telegram_bot, telegram_chat_id, headers,
     except requests.exceptions.ReadTimeout:
         return None
     except ConnectionError:
+        no_connection_count += 1
         print("No internet connection")
+        if no_connection_count > 5:
+            time.sleep(15)
+        elif no_connection_count > 10:
+            time.sleep(30)
         return None
 
 
@@ -56,10 +63,12 @@ def main():
     headers = {"Authorization": dvmn_token}
 
     timestamp = None
+    no_connection_count = 0
     while True:
         timestamp = get_homeworks_status_updates(telegram_bot,
                                                  telegram_chat_id,
-                                                 headers, timestamp)
+                                                 headers, no_connection_count,
+                                                 timestamp)
 
 
 if __name__ == '__main__':

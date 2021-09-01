@@ -23,7 +23,7 @@ def get_homeworks_status_updates(telegram_bot, telegram_chat_id, headers,
                                  no_connection_count, timestamp=None):
     api_url = "https://dvmn.org/api/long_polling/"
     try:
-        params = {"timestamp": timestamp} if timestamp else None
+        params = {"timestamp": timestamp}
         response = requests.get(api_url, headers=headers, params=params)
         response.raise_for_status()
         no_connection_count = 0

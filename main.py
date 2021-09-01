@@ -14,8 +14,12 @@ def send_telegram_message(telegram_bot, telegram_chat_id, work_title,
     pos_message = \
         "Преподавателю всё понравилось, можно приступать к следующему уроку!"
     success_fail_message = pos_message if message_is_negative else neg_message
-    telegram_message = f"""У вас проверили работу "{work_title}".\n
-        {success_fail_message}\n\n{lesson_url}"""
+    telegram_message = f"""У вас проверили работу "{work_title}".
+
+    {success_fail_message}
+
+    {lesson_url}"""
+
     telegram_bot.send_message(text=telegram_message, chat_id=telegram_chat_id)
 
 
@@ -33,10 +37,9 @@ def get_homeworks_status_updates(telegram_bot, telegram_chat_id, headers,
             last_attempt = response_content['new_attempts'][0]
             work_title = last_attempt['lesson_title']
             relative_lesson_url = last_attempt['lesson_url']
-            lesson_url = \
-                urljoin("https://dvmn.org", relative_lesson_url)
-            message_is_negative = \
-                response_content['new_attempts'][0]['is_negative']
+            lesson_url = urljoin("https://dvmn.org",
+                                 relative_lesson_url)
+            message_is_negative = last_attempt['is_negative']
             send_telegram_message(telegram_bot, telegram_chat_id, work_title,
                                   lesson_url, message_is_negative)
         else:

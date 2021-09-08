@@ -13,7 +13,7 @@ def send_telegram_message(telegram_bot, telegram_chat_id, work_title,
     neg_message = "К сожалению, в работе нашлись ошибки."
     pos_message = \
         "Преподавателю всё понравилось, можно приступать к следующему уроку!"
-    success_fail_message = pos_message if message_is_negative else neg_message
+    success_fail_message = neg_message if message_is_negative else pos_message
     telegram_message = f"""У вас проверили работу "{work_title}".
 
     {success_fail_message}

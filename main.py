@@ -95,9 +95,4 @@ def main():
 
 
 if __name__ == '__main__':
-    while True:
-        try:
-            main()
-        except Exception as e:
-            logger.exception(e)
-            time.sleep(15)
+    main()

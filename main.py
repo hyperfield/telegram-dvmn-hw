@@ -84,7 +84,6 @@ def main():
     logger.addHandler(logs_handler)
     dvmn_token = getenv("DVMN_API_TOKEN")
     headers = {"Authorization": dvmn_token}
-
     timestamp = None
     no_connection_count = 0
     logger.info("The Dvmn homework bot has started")
@@ -96,4 +95,9 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    while True:
+        try:
+            main()
+        except Exception as e:
+            logger.exception(e)
+            time.sleep(15)

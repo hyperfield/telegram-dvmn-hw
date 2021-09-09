@@ -2,10 +2,14 @@
 
 from dotenv import load_dotenv
 from os import getenv
+import logging
 import requests
 import telegram
 import time
 from urllib.parse import urljoin
+
+
+logger = logging.getLogger("Telegram Logger")
 
 
 def send_telegram_message(telegram_bot, telegram_chat_id, work_title,
@@ -50,7 +54,7 @@ def get_homeworks_status_updates(telegram_bot, telegram_chat_id, headers,
         return None
     except ConnectionError:
         no_connection_count += 1
-        print("No internet connection")
+        logger.warning("The Dvnn homwork bot has no internet connection")
         if no_connection_count > 5:
             time.sleep(15)
         elif no_connection_count > 10:
@@ -58,16 +62,32 @@ def get_homeworks_status_updates(telegram_bot, telegram_chat_id, headers,
         return None
 
 
+class LogsHandler(logging.Handler):
+    def __init__(self, telegram_chat_id, telegram_token):
+        super().__init__()
+        self.chat_id = telegram_chat_id
+        self.telegram_bot = telegram.Bot(token=telegram_token)
+
+    def emit(self, record):
+        log_entry = self.format(record)
+        self.telegram_bot.send_message(chat_id=self.chat_id, text=log_entry)
+
+
 def main():
     load_dotenv()
     telegram_token = getenv("TELEGRAM_TOKEN")
-    telegram_bot = telegram.Bot(token=telegram_token)
     telegram_chat_id = getenv("TELEGRAM_CHAT_ID")
+    telegram_bot = telegram.Bot(token=telegram_token)
+    logging.basicConfig(level=logging.INFO,
+                        format="%(process)d %(levelname)s %(message)s")
+    logs_handler = LogsHandler(telegram_chat_id, telegram_token)
+    logger.addHandler(logs_handler)
     dvmn_token = getenv("DVMN_API_TOKEN")
     headers = {"Authorization": dvmn_token}
 
     timestamp = None
     no_connection_count = 0
+    logger.info("The Dvmn homework bot has started")
     while True:
         timestamp = get_homeworks_status_updates(telegram_bot,
                                                  telegram_chat_id,

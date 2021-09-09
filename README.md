@@ -38,6 +38,7 @@ Also get your API key from **Dvmn**. Now you need to set up the program by creat
     TELEGRAM_TOKEN = "1963334630:AAB28DCf15DqJE6VCROlwB5dE14TLkuadyl"
     TELEGRAM_CHAT_ID = "135144583"
 
+> **Note:** If you deploy this script on a service which does not use a `.env` (or similar) file, but which would store these environment variables in its own environment (such as [Heroku](http://heroku.com)), you don't need to change anything in the code. The above environment variables will be picked up automatically from the current environment if no `.env` file is present.
 
 ## Launching the program
 
